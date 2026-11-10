@@ -1,0 +1,178 @@
+# Federated Intelligence
+
+**A custom-built federated learning research platform for distributed optimization, privacy-preserving machine learning, client heterogeneity and communication-efficient training.**
+
+![System architecture](docs/images/architecture/system-architecture.png)
+
+*System architecture: an experiment layer (YAML → runner → tracking) drives a central coordinator that selects clients, dispatches local training to an in-process or Ray backend and receives only serialized model updates, which are validated, optionally clipped and noised for differential privacy, and aggregated. Results feed a FastAPI + PostgreSQL backend and a React dashboard.*
+
+## Why this project
+
+Most federated learning demos wrap an existing framework. Here the core components – data generator, partitioners, client/server engine, FedAvg/FedProx, client-level DP with a Rényi accountant, communication codecs, network simulator, experiment framework and statistics – are implemented from scratch on top of PyTorch/NumPy, so each design decision is explicit, tested and measurable. Mature libraries are used only where re-implementation would be unwise (tensor computation, Ray, Opacus as an *independent check* of the accountant, MLflow).
+
+> **Status and honesty note.** All reported results come from the **synthetic federated tabular** benchmark (479 runs). The FEMNIST and Shakespeare pipelines (download, loaders, CNN, GRU, writer-/character-aware leakage-safe splits, configs) are implemented and tested on schema-identical fixtures, but the real datasets could not be downloaded in the development sandbox, so **no FEMNIST/Shakespeare results are claimed**. Run them yourself with the commands below.
+
+## Key capabilities
+
+| Area | What is implemented |
+|---|---|
+| Data | Controllable synthetic generator (label / feature / quantity skew, label noise), Parquet + checksummed manifests, IID / Dirichlet / quantity-skew / natural partitioners, quality + leakage validators, heterogeneity profiling (JSD, mean & covariance distance, sample CV) |
+| Learning | Clients that return updates only, FedAvg, FedProx, random / availability / Poisson / full client selection, dropout without zero-filling, update validation |
+| Privacy | L2 clipping, Gaussian noise, **client-level central DP**, own RDP accountant for the sampled Gaussian mechanism (verified against Opacus), noise calibration for a target ε |
+| Communication | float16, int8, top-k sparsification, error feedback, **measured serialized bytes**, network simulator (latency, bandwidth, deadline, failures) |
+| Distribution | Local reference executor and Ray actor executor (timeouts, failure handling, results identical to local for the same seed) |
+| Research tooling | YAML configs, resumable grid × seed suites, JSON/MLflow tracking, convergence metrics, paired tests, Holm correction, effect sizes |
+| Product | FastAPI backend (SQLite / PostgreSQL), React + TypeScript dashboard with 9 screens, Docker Compose, GitHub Actions |
+
+## Headline results (synthetic benchmark, mean ± SD over independent seeds)
+
+| Question | Finding |
+|---|---|
+| Effect of non-IID data | Label skew −21 pts, feature skew −12 pts, quantity skew ≈ 0. Dirichlet(0.5) lowers mean accuracy only 0.65 pts (p = 0.075, n = 5) but worst-client accuracy falls 0.79 → 0.56 |
+| FedProx vs FedAvg | No statistically robust accuracy gain (all Holm p > 0.1); slower early convergence; worse than FedAvg under DP |
+| Differential privacy (client-level, δ = 1e-5) | ε = 10 → 0.849, ε = 5 → 0.831, ε = 2 → 0.796 vs 0.868 non-private; more clients help |
+| Compression | int8 3.7× uplink at no accuracy loss; top-1 % 41× uplink with slower convergence; downlink dominates total traffic |
+| Participation / dropout | ≤ 50 % dropout nearly harmless; 70 % costs ≈ 3.5 pts |
+
+![IID vs non-IID convergence](docs/images/experiments/convergence-comparison.png)
+
+*Global test accuracy per round for FedAvg on an IID and a Dirichlet(0.5) partition of the same population (mean and 95 % CI over 5 seeds); the dashed line is the centralized MLP. The curves are close, but the per-client view hides a large fairness gap (see the report).*
+
+![Privacy-utility trade-off](docs/images/experiments/privacy-utility.png)
+
+*Final test accuracy of client-level DP-FedAvg versus the ε computed by the accountant (logistic regression, 50 clients). Dashed lines are the non-private and clip-only references.*
+
+![Compression comparison](docs/images/communication/compression-comparison.png)
+
+*Accuracy versus total measured traffic (uplink + downlink) for each compression scheme. Points further left send fewer bytes.*
+
+Full analysis with statistics and limitations: [`reports/research-report.md`](reports/research-report.md). All tables: [`reports/tables/results_summary.md`](reports/tables/results_summary.md).
+
+## Dashboard
+
+![Dashboard overview](docs/images/dashboard/overview.png)
+
+*Overview screen: run counts, best accuracy and total traffic, read from the experiment database (nothing is mocked).*
+
+![Algorithm comparison](docs/images/dashboard/algorithm-comparison.png)
+
+*Algorithm comparison: mean and 95 % CI of a chosen metric grouped by experiment factors, with the same numbers in a table.*
+
+![Privacy analysis](docs/images/dashboard/privacy-analysis.png)
+
+*Privacy analysis: ε from the accountant versus accuracy for the stored DP runs.*
+
+More screens are in [`docs/images/dashboard/`](docs/images/dashboard/): datasets, clients, experiment configuration, training monitor, communication analysis and experiment history.
+
+## Installation
+
+Python 3.12 or 3.13.
+
+```bash
+git clone <your-fork-url> federated-intelligence && cd federated-intelligence
+python -m venv .venv
+source .venv/bin/activate            # Windows PowerShell: .\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -e ".[dev,api,privacy,tracking,distributed]"
+python -m pip check
+```
+
+`requirements-lock.txt` lists the exact versions used for the reported results.
+
+## Quickstart
+
+```bash
+# 1. Generate and validate the synthetic data (writes manifests with checksums)
+python scripts/generate_synthetic.py        # data/synthetic/<scenario>/ + manifests in data/metadata/
+python scripts/validate_data.py             # schema, leakage, partition consistency
+
+# 2. Smoke experiment (3 rounds, deterministic)
+python scripts/run_experiment.py --config configs/experiments/smoke.yaml
+
+# 3. Centralized baselines
+python scripts/run_baselines.py
+
+# 4. A full suite (resumable; finished runs are skipped)
+python scripts/run_experiment.py --suite configs/experiments/heterogeneity.yaml --workers 2
+
+# 5. Tables, figures and statistics
+python scripts/generate_report.py
+
+# 6. Dashboard
+python scripts/import_results.py
+uvicorn federated_intelligence.api.main:app      # API docs at /docs, dashboard at /
+(cd frontend && npm install && npm run build)    # build the dashboard first
+```
+
+### FEMNIST and Shakespeare (needs access to huggingface.co)
+
+```bash
+python scripts/download_datasets.py      # records source, licence, row count, schema, access date
+python scripts/inspect_datasets.py
+python scripts/run_experiment.py --config configs/experiments/femnist_fedavg.yaml
+python scripts/run_experiment.py --config configs/experiments/shakespeare_fedavg.yaml
+# Offline pipeline check with schema-identical fixtures:
+python scripts/make_fixture_datasets.py
+python scripts/run_experiment.py --config configs/experiments/fixture_femnist_smoke.yaml
+```
+
+### Docker
+
+```bash
+docker compose up --build    # dashboard :8080, API :8000/docs, MLflow :5000, PostgreSQL
+```
+
+## Experiment examples
+
+```yaml
+# my_run.yaml – a single run: FedProx + client-level DP (target ε = 10) + int8 uplink on Ray
+experiment: {name: demo, seed: 1}
+dataset: {mode: pooled, partition: dirichlet, alpha: 0.5}
+model: {name: logreg}
+federated: {algorithm: fedprox, mu: 1.0, participation_rate: 0.5, num_rounds: 40}
+privacy: {enabled: true, clip_norm: 0.5, target_epsilon: 10.0, delta: 1.0e-5}
+communication: {compressor: int8}
+execution: {backend: ray, num_workers: 2}
+```
+```bash
+python scripts/run_experiment.py --config my_run.yaml --tracker jsonl
+```
+
+See [`docs/experiments/README.md`](docs/experiments/README.md) for the full experiment matrix (EXP-00 … EXP-09) and pilot protocol.
+
+## Privacy methodology
+
+Central DP with a **trusted server**; privacy unit = **one client** (add/remove adjacency); Poisson client sampling with rate q; clip to C, add N(0, σ²C²I) to the sum, divide by qK; ε from an RDP accountant that is tested against Opacus. ε is never assigned by hand: for a target ε the noise multiplier is found by bisection on the accountant. This is not record-level DP and does not defend against an untrusted server. Details: [`docs/methodology/README.md`](docs/methodology/README.md).
+
+## Testing
+
+```bash
+ruff check src tests scripts && mypy src/federated_intelligence
+pytest -m "not ray"        # 123 tests: unit, integration, system, performance
+pytest -m ray              # 2 tests that start a local Ray runtime
+```
+
+Invariants covered include: single-client FedAvg equals that client's update; identical clients leave parameters unchanged; FedProx(μ = 0) is identical to FedAvg; absent clients are excluded, never zero-filled; no train/val/test or global-test leakage; accountant equals Opacus; local and Ray executors agree exactly.
+
+## Repository layout
+
+```
+configs/      dataset, model and experiment YAML     reports/   tables, figures, raw results, report
+src/federated_intelligence/{data,models,clients,server,algorithms,privacy,communication,
+                            orchestration,experiments,evaluation,api}
+scripts/      CLI entry points                        frontend/  React + TypeScript dashboard
+tests/        unit, integration, system, performance  docs/      architecture, methodology, dataset cards
+docker/ + docker-compose.yml, .github/workflows       notebooks/ data exploration and analysis
+```
+
+## Limitations
+
+Single synthetic benchmark (Gaussian data favours simple models); 5–8 seeds give limited statistical power; DP with 50 clients is costly and assumes a trusted server; the network is simulated; hyper-parameters were tuned once at one heterogeneity level; FEMNIST/Shakespeare results are pending. See Section 14 of the report.
+
+## References
+
+McMahan et al. 2017 (FedAvg) · Li et al. 2020 (FedProx) · Hsu et al. 2019 (Dirichlet partitioning) · McMahan et al. 2018 (DP-FedAvg) · Mironov et al. 2019 (RDP of the sampled Gaussian) · Balle et al. 2020 · Caldas et al. 2018 (LEAF) · Opacus, Ray, MLflow, Flower Datasets (reference for partitioning strategies).
+
+## License
+
+MIT – see [LICENSE](LICENSE). FEMNIST and Shakespeare (LEAF) are BSD 2-Clause; they are downloaded, never redistributed.
