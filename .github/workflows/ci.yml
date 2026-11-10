@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push: {branches: [main]}
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install (CPU torch first to avoid the CUDA wheels)
+        run: |
+          python -m pip install --upgrade pip
+          pip install --index-url https://download.pytorch.org/whl/cpu torch
+          pip install -e ".[dev,api,privacy,tracking]"
+          pip check
+      - name: Lint
+        run: ruff check src tests scripts
+      - name: Type check
+        run: mypy src/federated_intelligence
+      - name: Tests with coverage (fast subset, Ray tests run in quality.yml)
+        run: pytest -m "not slow and not ray" --cov=federated_intelligence --cov-report=term-missing --cov-report=xml
+      - name: Smoke experiment (3 rounds, deterministic)
+        run: python scripts/run_experiment.py --config configs/experiments/smoke.yaml
+      - name: Build validation
+        run: |
+          pip install build
+          python -m build --wheel
+      - uses: actions/upload-artifact@v4
+        if: matrix.python-version == '3.12'
+        with:
+          name: coverage-xml
+          path: coverage.xml
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build

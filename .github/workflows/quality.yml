@@ -1,0 +1,39 @@
+name: Quality
+
+# Heavier checks: Ray backend equivalence, slow tests, container builds. Weekly + manual.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
+  pull_request:
+    paths: ["src/federated_intelligence/orchestration/**", "docker/**", "docker-compose.yml"]
+
+jobs:
+  ray-and-slow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - run: |
+          pip install --index-url https://download.pytorch.org/whl/cpu torch
+          pip install -e ".[dev,api,privacy,distributed,tracking]"
+      - name: Ray-vs-local equivalence, fault handling and slow tests
+        run: pytest -m "ray or slow or performance" -x
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build images
+        run: docker compose build
+      - name: Start stack and probe health
+        run: |
+          docker compose up -d
+          for i in $(seq 1 60); do curl -fsS http://localhost:8000/api/health && break || sleep 3; done
+          curl -fsS http://localhost:8000/api/overview
+          curl -fsS http://localhost:8080/ >/dev/null
+      - if: always()
+        run: docker compose down -v
