@@ -1,0 +1,13 @@
+{
+  "exp01_convergence_iid_vs_noniid.png": "Global test accuracy versus round for FedAvg on an IID and a Dirichlet(0.5) partition of the same population (mean and 95% CI over seeds). The dashed line is the centralized MLP reference.",
+  "exp01b_heterogeneity_sources.png": "Final global test accuracy of FedAvg for each isolated source of heterogeneity from the synthetic generator (label, feature and quantity skew, and all three combined); bars show the mean and 95% CI over seeds.",
+  "exp02_fedavg_vs_fedprox.png": "Left: final test accuracy of FedAvg and FedProx (\u03bc = 1) for four Dirichlet concentrations (mean and 95% CI over seeds). Right: convergence curves for the most heterogeneous partition (\u03b1 = 0.1).",
+  "exp02b_mu_sensitivity.png": "Final test accuracy as a function of the FedProx proximal coefficient \u03bc for \u03b1 = 0.5 and \u03b1 = 0.1 (leftmost point is \u03bc = 0, i.e. FedAvg; mean and 95% CI over seeds).",
+  "exp03_participation.png": "Effect of the fraction of clients per round on final accuracy, rounds needed to reach 0.80 validation accuracy and total client compute (Dirichlet \u03b1 = 0.5; mean over seeds, error bars = 95% CI).",
+  "exp07_dropout.png": "Final test accuracy when each selected client independently fails to return its update with the given probability; aggregation weights are re-normalised over the survivors (mean and 95% CI over seeds).",
+  "exp04_privacy_utility.png": "Final test accuracy of client-level DP-FedAvg (logistic regression, 50 clients) versus the accountant's \u03b5; dashed lines are the non-private and clip-only references (mean and 95% CI over seeds).",
+  "exp05_clip_noise_heatmap.png": "Mean final test accuracy for every combination of clipping norm C and noise multiplier \u03c3 (logistic regression, DP-FedAvg). Column labels give the \u03b5 that the accountant computes for each \u03c3.",
+  "exp08_heterogeneity_dp.png": "Final test accuracy under client-level DP (target \u03b5 = 10) for IID and Dirichlet partitions, FedAvg versus FedProx (mean and 95% CI over seeds).",
+  "exp06_compression_tradeoff.png": "Final test accuracy against total measured traffic (uplink + downlink) for each compression scheme; points further left use fewer bytes (mean and 95% CI over seeds, MLP, \u03b1 = 0.5).",
+  "exp09_network_deadline.png": "Simulated 0.5 Mbit/s heterogeneous network with 5% communication failures: number of client updates accepted and final accuracy as the round deadline tightens, for float32 and int8 uplinks."
+}
