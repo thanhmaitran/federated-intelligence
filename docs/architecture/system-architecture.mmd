@@ -1,0 +1,30 @@
+flowchart TB
+    subgraph CTRL["Experiment layer"]
+        CFG["YAML configs<br/>(pydantic-validated)"] --> RUN["Runner / Suite<br/>(seeds, caching, JSON results)"]
+        RUN --> TRK["Tracking<br/>JSON + MLflow"]
+    end
+    subgraph SERVER["Central coordinator (trusted server model)"]
+        SEL["Client selector<br/>random / availability / Poisson"] --> RM["Round manager<br/>dropout + network deadline"]
+        RM --> AGG["Aggregator<br/>validate + FedAvg / FedProx"]
+        DP["Client-level DP<br/>clip + Gaussian noise + RDP accountant"] --> AGG
+        GM[("Global model")] --- AGG
+    end
+    subgraph EXEC["Execution backend"]
+        LOC["LocalExecutor<br/>(reference)"]
+        RAY["RayExecutor<br/>(actors own client data)"]
+    end
+    subgraph CLIENTS["Clients (data never leaves)"]
+        C1["Client 1<br/>local data + trainer"]
+        C2["Client 2"]
+        CN["Client N"]
+    end
+    subgraph COMM["Communication layer"]
+        CMP["Update codecs<br/>fp16 / int8 / top-k (+error feedback)"]
+        NET["Network simulator<br/>latency, bandwidth, failures"]
+    end
+    RUN --> SEL
+    RM --> EXEC
+    EXEC --> C1 & C2 & CN
+    C1 & C2 & CN -- "compressed update only" --> CMP --> AGG
+    NET -. simulated time .-> RM
+    AGG --> API["FastAPI + PostgreSQL"] --> UI["React dashboard"]

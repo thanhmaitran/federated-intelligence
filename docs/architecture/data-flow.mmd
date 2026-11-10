@@ -1,0 +1,14 @@
+flowchart LR
+    subgraph SRC["Sources"]
+        GEN["Synthetic generator<br/>(label / feature / quantity skew)"]
+        HF1["FEMNIST (HF, writer_id)"]
+        HF2["Shakespeare (HF, character_id)"]
+    end
+    GEN --> POOL["Pooled population"] --> PART["Partitioners<br/>IID / Dirichlet / quantity"]
+    GEN --> NAT["Native per-client scenarios"]
+    HF1 & HF2 --> NATP["Natural partition + leakage-safe splits"]
+    PART & NAT & NATP --> FD["FederatedDataset<br/>train / val / test per client<br/>+ global test + unseen clients"]
+    FD --> VAL["Validators<br/>leakage, duplicates, coverage"]
+    FD --> PROF["Heterogeneity profiling<br/>JSD, mean/cov distance, CV"]
+    FD --> MAN["Manifests<br/>indices + checksums"]
+    VAL --> FL["Federated training"]

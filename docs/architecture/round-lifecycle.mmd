@@ -1,0 +1,11 @@
+flowchart LR
+    A["1 SELECT<br/>clients"] --> B["2 BROADCAST<br/>global params (measured bytes)"]
+    B --> C["3 LOCAL TRAINING<br/>SGD (+ proximal term for FedProx)"]
+    C --> D["4 COMPRESS<br/>client-side codec"]
+    D --> E["5 COLLECT<br/>drop failed / late clients"]
+    E --> F["6 VALIDATE<br/>shape, dtype, finite"]
+    F --> G["7 AGGREGATE<br/>weighted mean or clipped+noised sum"]
+    G --> H["8 UPDATE<br/>w(t+1) = w(t) + lr * delta"]
+    H --> I["9 EVALUATE<br/>global test + per-client"]
+    I --> J["10 LOG<br/>metrics, bytes, epsilon"]
+    J --> A
