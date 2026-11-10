@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "federated-intelligence"
+version = "0.1.0"
+description = "A custom federated learning research platform"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.12,<3.14"
+
+dependencies = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "pyarrow",
+    "scikit-learn",
+    "torch",
+    "pyyaml",
+    "pydantic>=2",
+    "matplotlib",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+datasets = ["datasets", "huggingface-hub", "pillow", "torchvision"]
+privacy = ["opacus"]
+distributed = ["ray"]
+tracking = ["mlflow"]
+api = ["fastapi", "uvicorn[standard]", "sqlalchemy", "psycopg[binary]"]
+dev = ["pytest", "pytest-cov", "pytest-mock", "ruff", "mypy", "httpx"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra --strict-markers"
+markers = [
+    "slow: long-running tests (deselect with -m 'not slow')",
+    "ray: tests requiring the optional Ray backend",
+    "performance: coarse runtime / memory / communication budget tests",
+]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning", "ignore::UserWarning"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]  # line length is advisory (120); long literals/tables are kept readable
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+python_version = "3.12"
+ignore_missing_imports = true
+warn_unused_ignores = true
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*" = ["E702"]

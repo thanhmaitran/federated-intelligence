@@ -1,0 +1,42 @@
+# Local deployment: PostgreSQL + MLflow + FastAPI backend + React dashboard.
+#   docker compose up --build        ->  dashboard on http://localhost:8080, API docs on http://localhost:8000/docs
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: fi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fi_dev_password}
+      POSTGRES_DB: fi
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fi -d fi"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mlflow:
+    build: {context: ., dockerfile: docker/Dockerfile.mlflow}
+    environment:
+      MLFLOW_BACKEND_URI: postgresql+psycopg://fi:${POSTGRES_PASSWORD:-fi_dev_password}@postgres:5432/fi
+    depends_on: {postgres: {condition: service_healthy}}
+    volumes: [mlartifacts:/mlflow/artifacts]
+    ports: ["5000:5000"]
+
+  backend:
+    build: {context: ., dockerfile: docker/Dockerfile.backend}
+    environment:
+      DATABASE_URL: postgresql+psycopg://fi:${POSTGRES_PASSWORD:-fi_dev_password}@postgres:5432/fi
+      FI_DATA_DIR: /app/data
+      FI_IMPORT_RESULTS: "1"
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    depends_on: {postgres: {condition: service_healthy}}
+    ports: ["8000:8000"]
+
+  frontend:
+    build: {context: ., dockerfile: docker/Dockerfile.frontend}
+    depends_on: [backend]
+    ports: ["8080:80"]
+
+volumes:
+  pgdata:
+  mlartifacts:
