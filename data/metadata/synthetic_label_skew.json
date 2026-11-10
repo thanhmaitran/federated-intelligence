@@ -1,0 +1,43 @@
+{
+  "dataset": "synthetic_federated_tabular",
+  "seed": 42,
+  "num_clients": 50,
+  "num_features": 24,
+  "num_classes": 2,
+  "scenario": "label_skew",
+  "generator_version": "1.0.0",
+  "config": {
+    "seed": 42,
+    "num_clients": 50,
+    "num_features": 24,
+    "num_classes": 2,
+    "min_samples_per_client": 300,
+    "max_samples_per_client": 1000,
+    "scenario": "label_skew",
+    "label_beta": 0.5,
+    "balanced_positive_rate": 0.5,
+    "feature_shift": 1.0,
+    "feature_scale_range": [
+      0.6,
+      1.6
+    ],
+    "concept_noise": 0.05,
+    "quantity_sigma": 1.0,
+    "label_noise": 0.0,
+    "weight_scale": 2.0,
+    "global_test_size": 5000,
+    "train_fraction": 0.7,
+    "val_fraction": 0.15,
+    "test_fraction": 0.15
+  },
+  "files": {
+    "clients.parquet": {
+      "sha256": "c251f24171aa724732af27901c84c3c2c1938a0cd47d9296d3d837d34e4b7f6d",
+      "bytes": 7726317
+    },
+    "global_test.parquet": {
+      "sha256": "88b2e4ce918f8a00b07a0d09663b06d4ae3344e5d630f3154cc57f2aa9d25700",
+      "bytes": 1169949
+    }
+  }
+}

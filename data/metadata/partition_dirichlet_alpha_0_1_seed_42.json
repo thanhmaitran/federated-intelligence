@@ -1,0 +1,320 @@
+{
+  "partition_id": "dirichlet_alpha_0_1_seed_42",
+  "dataset": "synthetic_federated_tabular",
+  "num_clients": 50,
+  "partition_method": "dirichlet",
+  "alpha": 0.1,
+  "min_samples_per_client": 10,
+  "repaired_clients": 15,
+  "seed": 42,
+  "partitioner_version": "1.0.0",
+  "split_policy": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
+  "checksum_sha256": "cfeb9ad603aa2f0e8eb63e0d00fe544e93daa9ad5a95d94702328ab4dc1ba58e",
+  "clients": {
+    "client_000": {
+      "num_samples": 2195,
+      "train_samples": 1536,
+      "validation_samples": 329,
+      "test_samples": 330
+    },
+    "client_001": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_002": {
+      "num_samples": 77,
+      "train_samples": 54,
+      "validation_samples": 12,
+      "test_samples": 11
+    },
+    "client_003": {
+      "num_samples": 2583,
+      "train_samples": 1808,
+      "validation_samples": 387,
+      "test_samples": 388
+    },
+    "client_004": {
+      "num_samples": 426,
+      "train_samples": 298,
+      "validation_samples": 64,
+      "test_samples": 64
+    },
+    "client_005": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_006": {
+      "num_samples": 213,
+      "train_samples": 149,
+      "validation_samples": 32,
+      "test_samples": 32
+    },
+    "client_007": {
+      "num_samples": 302,
+      "train_samples": 211,
+      "validation_samples": 45,
+      "test_samples": 46
+    },
+    "client_008": {
+      "num_samples": 2952,
+      "train_samples": 2066,
+      "validation_samples": 443,
+      "test_samples": 443
+    },
+    "client_009": {
+      "num_samples": 289,
+      "train_samples": 202,
+      "validation_samples": 43,
+      "test_samples": 44
+    },
+    "client_010": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_011": {
+      "num_samples": 157,
+      "train_samples": 110,
+      "validation_samples": 24,
+      "test_samples": 23
+    },
+    "client_012": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_013": {
+      "num_samples": 12,
+      "train_samples": 8,
+      "validation_samples": 2,
+      "test_samples": 2
+    },
+    "client_014": {
+      "num_samples": 464,
+      "train_samples": 325,
+      "validation_samples": 70,
+      "test_samples": 69
+    },
+    "client_015": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_016": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_017": {
+      "num_samples": 59,
+      "train_samples": 41,
+      "validation_samples": 9,
+      "test_samples": 9
+    },
+    "client_018": {
+      "num_samples": 20,
+      "train_samples": 14,
+      "validation_samples": 3,
+      "test_samples": 3
+    },
+    "client_019": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_020": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_021": {
+      "num_samples": 261,
+      "train_samples": 183,
+      "validation_samples": 39,
+      "test_samples": 39
+    },
+    "client_022": {
+      "num_samples": 1676,
+      "train_samples": 1173,
+      "validation_samples": 251,
+      "test_samples": 252
+    },
+    "client_023": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_024": {
+      "num_samples": 431,
+      "train_samples": 302,
+      "validation_samples": 65,
+      "test_samples": 64
+    },
+    "client_025": {
+      "num_samples": 62,
+      "train_samples": 43,
+      "validation_samples": 9,
+      "test_samples": 10
+    },
+    "client_026": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_027": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_028": {
+      "num_samples": 190,
+      "train_samples": 133,
+      "validation_samples": 28,
+      "test_samples": 29
+    },
+    "client_029": {
+      "num_samples": 2628,
+      "train_samples": 1840,
+      "validation_samples": 394,
+      "test_samples": 394
+    },
+    "client_030": {
+      "num_samples": 205,
+      "train_samples": 144,
+      "validation_samples": 31,
+      "test_samples": 30
+    },
+    "client_031": {
+      "num_samples": 109,
+      "train_samples": 76,
+      "validation_samples": 16,
+      "test_samples": 17
+    },
+    "client_032": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_033": {
+      "num_samples": 677,
+      "train_samples": 474,
+      "validation_samples": 102,
+      "test_samples": 101
+    },
+    "client_034": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_035": {
+      "num_samples": 27,
+      "train_samples": 19,
+      "validation_samples": 4,
+      "test_samples": 4
+    },
+    "client_036": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_037": {
+      "num_samples": 89,
+      "train_samples": 62,
+      "validation_samples": 13,
+      "test_samples": 14
+    },
+    "client_038": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_039": {
+      "num_samples": 3054,
+      "train_samples": 2138,
+      "validation_samples": 458,
+      "test_samples": 458
+    },
+    "client_040": {
+      "num_samples": 124,
+      "train_samples": 87,
+      "validation_samples": 19,
+      "test_samples": 18
+    },
+    "client_041": {
+      "num_samples": 909,
+      "train_samples": 636,
+      "validation_samples": 136,
+      "test_samples": 137
+    },
+    "client_042": {
+      "num_samples": 2233,
+      "train_samples": 1563,
+      "validation_samples": 335,
+      "test_samples": 335
+    },
+    "client_043": {
+      "num_samples": 954,
+      "train_samples": 668,
+      "validation_samples": 143,
+      "test_samples": 143
+    },
+    "client_044": {
+      "num_samples": 4762,
+      "train_samples": 3333,
+      "validation_samples": 714,
+      "test_samples": 715
+    },
+    "client_045": {
+      "num_samples": 10,
+      "train_samples": 7,
+      "validation_samples": 2,
+      "test_samples": 1
+    },
+    "client_046": {
+      "num_samples": 28,
+      "train_samples": 20,
+      "validation_samples": 4,
+      "test_samples": 4
+    },
+    "client_047": {
+      "num_samples": 204,
+      "train_samples": 143,
+      "validation_samples": 31,
+      "test_samples": 30
+    },
+    "client_048": {
+      "num_samples": 1400,
+      "train_samples": 980,
+      "validation_samples": 210,
+      "test_samples": 210
+    },
+    "client_049": {
+      "num_samples": 68,
+      "train_samples": 48,
+      "validation_samples": 10,
+      "test_samples": 10
+    }
+  },
+  "total_samples": 30000
+}
