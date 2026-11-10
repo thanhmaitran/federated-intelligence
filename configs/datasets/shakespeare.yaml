@@ -1,0 +1,11 @@
+dataset:
+  name: shakespeare
+  source: flwrlabs/shakespeare      # Hugging Face; original benchmark: LEAF
+  raw_path: data/raw/shakespeare
+  client_key: character_id
+loader:
+  min_samples_per_client: 200
+  max_clients: 100
+  max_samples_per_client: 1500      # first rows of a role = a contiguous passage
+  fractions: [0.8, 0.1, 0.1]        # contiguous blocks, separated by a gap of 81 rows (no leakage)
+model: {name: gru}

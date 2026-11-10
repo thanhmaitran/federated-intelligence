@@ -1,0 +1,26 @@
+dataset:
+  name: synthetic_federated_tabular
+  version: 1.0.0
+
+generation:
+  seed: 42
+  num_clients: 50
+  num_features: 24
+  num_classes: 2
+  min_samples_per_client: 300
+  max_samples_per_client: 1000
+  weight_scale: 2.0
+  global_test_size: 5000
+
+heterogeneity:
+  scenarios: [iid, label_skew, feature_skew, quantity_skew, combined_non_iid]
+  label_beta: 0.5        # p_k ~ Beta(0.5, 0.5): strongly different class priors
+  feature_shift: 1.0     # mu_k = Delta_k ~ N(0, 1)
+  quantity_sigma: 1.0    # n_k ~ LogNormal(0, 1) rescaled into [min, max]
+  dirichlet_alphas: [10.0, 1.0, 0.5, 0.1]
+  pooled_total_samples: 30000
+
+splits:
+  train: 0.70
+  validation: 0.15
+  test: 0.15

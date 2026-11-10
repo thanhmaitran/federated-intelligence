@@ -1,0 +1,12 @@
+dataset:
+  name: femnist
+  source: flwrlabs/femnist          # Hugging Face; original benchmark: LEAF
+  raw_path: data/raw/femnist
+  client_key: writer_id
+loader:
+  holdout_writer_fraction: 0.10     # writers never used for training (unseen-writer evaluation)
+  min_samples_per_client: 30
+  max_clients: 200                  # subsample for tractable simulation; set null for all writers
+  max_samples_per_client: 300
+  fractions: [0.8, 0.1, 0.1]        # per-client random split of a participating writer's samples
+model: {name: cnn}
