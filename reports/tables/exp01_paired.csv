@@ -1,0 +1,2 @@
+g,a,b,metric,n,mean_a,mean_b,mean_diff,ci_low,ci_high,cohens_dz,p_value,wilcoxon_p,p_holm,significant_holm_0.05
+all,iid,dirichlet0.5,test_accuracy,5,0.86684,0.86036,0.006480000000000019,-0.0010330419860498123,0.01399304198604985,1.0709354111557137,0.07478641854987084,0.125,0.07478641854987084,False

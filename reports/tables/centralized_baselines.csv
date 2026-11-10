@@ -1,0 +1,5 @@
+,seed,seed,test_accuracy,test_accuracy,test_macro_f1,test_macro_f1,test_precision,test_precision,test_recall,test_recall,test_roc_auc,test_roc_auc,test_pr_auc,test_pr_auc,train_seconds,train_seconds,num_parameters,num_parameters
+,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std
+model,,,,,,,,,,,,,,,,,,
+logreg,3.0,1.5811,0.8697,0.0083,0.8697,0.0083,0.8698,0.0083,0.8697,0.0083,0.9467,0.005,0.949,0.0048,17.6794,2.9453,50.0,0.0
+mlp,3.0,1.5811,0.8576,0.0064,0.8575,0.0064,0.8588,0.0072,0.8576,0.0064,0.9405,0.0048,0.9426,0.005,26.2452,0.2544,3746.0,0.0
