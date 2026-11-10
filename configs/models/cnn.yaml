@@ -1,0 +1,5 @@
+name: cnn
+channels: [16, 32]
+fc: 128
+num_classes: 62
+task: multiclass_classification

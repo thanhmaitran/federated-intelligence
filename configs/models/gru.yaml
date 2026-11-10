@@ -1,0 +1,5 @@
+name: gru
+embedding_dim: 8
+hidden_size: 128
+vocab_size: 80
+task: next_character_prediction
