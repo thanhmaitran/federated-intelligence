@@ -1,0 +1,55 @@
+# Differential-privacy studies (RQ3). Client-level central DP with Poisson sampling.
+# The model is logistic regression: with 50 clients the noise added to a ~3.7k-parameter MLP
+# update swamps the signal, whereas the 50-parameter linear model is learnable at moderate epsilon.
+# Privacy unit = one client; adjacency = add/remove a client; delta = 1e-5; RDP accountant.
+seeds: [1, 2, 3, 4, 5]
+defaults:
+  model: {name: logreg}
+  dataset: {partition: dirichlet, alpha: 0.5}
+  federated: {participation_rate: 0.5, num_rounds: 40, selection: poisson}
+experiments:
+  EXP-04:
+    research_question: RQ3
+    description: Privacy budget sweep. sigma is derived from the target epsilon by the accountant.
+    variants:
+      - {name: nodp, overrides: {federated: {selection: random}}}
+      - {name: clip_only, overrides: {privacy: {enabled: true, clip_norm: 1.0, noise_multiplier: 0.0}}}
+      - {name: eps50, overrides: {privacy: {enabled: true, clip_norm: 1.0, target_epsilon: 50.0}}}
+      - {name: eps20, overrides: {privacy: {enabled: true, clip_norm: 1.0, target_epsilon: 20.0}}}
+      - {name: eps10, overrides: {privacy: {enabled: true, clip_norm: 1.0, target_epsilon: 10.0}}}
+      - {name: eps5, overrides: {privacy: {enabled: true, clip_norm: 1.0, target_epsilon: 5.0}}}
+      - {name: eps2, overrides: {privacy: {enabled: true, clip_norm: 1.0, target_epsilon: 2.0}}}
+  EXP-05:
+    research_question: RQ3
+    description: Clipping norm x noise multiplier (epsilon is computed from sigma, never assumed).
+    overrides: {privacy: {enabled: true}}
+    grid:
+      clip:
+        - {name: C0.1, overrides: {privacy: {clip_norm: 0.1}}}
+        - {name: C0.5, overrides: {privacy: {clip_norm: 0.5}}}
+        - {name: C1, overrides: {privacy: {clip_norm: 1.0}}}
+        - {name: C2, overrides: {privacy: {clip_norm: 2.0}}}
+      noise:
+        - {name: z0.5, overrides: {privacy: {noise_multiplier: 0.5}}}
+        - {name: z1, overrides: {privacy: {noise_multiplier: 1.0}}}
+        - {name: z2, overrides: {privacy: {noise_multiplier: 2.0}}}
+  EXP-05B:
+    research_question: RQ3
+    description: More clients -> better privacy/utility at the same epsilon (K=50 vs K=200).
+    overrides: {privacy: {enabled: true, clip_norm: 1.0, target_epsilon: 5.0}}
+    grid:
+      clients:
+        - {name: K50, overrides: {dataset: {num_clients: 50, total_samples: 30000}, federated: {participation_rate: 0.5}}}
+        - {name: K200, overrides: {dataset: {num_clients: 200, total_samples: 60000}, federated: {participation_rate: 0.1}}}
+  EXP-08:
+    research_question: RQ2+RQ3
+    description: Combined heterogeneity + DP, FedAvg vs FedProx (eps=10).
+    overrides: {privacy: {enabled: true, clip_norm: 1.0, target_epsilon: 10.0}}
+    grid:
+      alpha:
+        - {name: iid, overrides: {dataset: {partition: iid}}}
+        - {name: alpha0.5, overrides: {dataset: {partition: dirichlet, alpha: 0.5}}}
+        - {name: alpha0.1, overrides: {dataset: {partition: dirichlet, alpha: 0.1}}}
+      algo:
+        - {name: fedavg, overrides: {federated: {algorithm: fedavg}}}
+        - {name: fedprox, overrides: {federated: {algorithm: fedprox, mu: 1.0}}}

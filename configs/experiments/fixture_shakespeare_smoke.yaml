@@ -1,0 +1,10 @@
+# Shakespeare-shaped TOY fixture: wiring check, not a result.
+experiment: {name: smoke_fixture_shakespeare, seed: 1}
+dataset:
+  name: shakespeare
+  path: data/fixtures/shakespeare
+  loader: {min_samples_per_client: 1000, global_test_per_client: 30}
+model: {name: gru}
+federated: {algorithm: fedprox, mu: 0.01, participation_rate: 0.5, num_rounds: 2}
+training: {local_epochs: 1, batch_size: 32, learning_rate: 0.5}
+evaluation: {per_client_every: 1}

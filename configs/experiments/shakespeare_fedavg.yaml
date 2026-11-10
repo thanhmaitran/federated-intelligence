@@ -1,0 +1,10 @@
+# Real Shakespeare (run `python scripts/download_datasets.py --dataset shakespeare` first).
+experiment: {name: shakespeare_fedavg, seed: 1}
+dataset:
+  name: shakespeare
+  path: data/raw/shakespeare
+  loader: {max_clients: 100, min_samples_per_client: 1000, max_samples_per_client: 1500}
+model: {name: gru}
+federated: {algorithm: fedavg, participation_rate: 0.1, num_rounds: 50, eval_every: 5}
+training: {local_epochs: 1, batch_size: 32, learning_rate: 0.8}
+evaluation: {per_client_every: 10, target_accuracy: 0.3}

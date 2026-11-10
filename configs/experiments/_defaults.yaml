@@ -1,0 +1,42 @@
+# Base configuration shared by every experiment suite (see experiments/suite.py).
+# Individual experiments only override what they study; nothing is hard-coded in the trainers.
+experiment:
+  seed: 1
+dataset:
+  name: synthetic_federated_tabular
+  mode: pooled            # one population, partitioned by dataset.partition
+  partition: iid
+  alpha: 0.5
+  total_samples: 30000
+  num_clients: 50
+  num_features: 24
+  weight_scale: 2.0       # signal strength of the labelling function (centralized acc ~0.87)
+model:
+  name: mlp
+  hidden: [64, 32]
+federated:
+  algorithm: fedavg
+  mu: 0.0
+  participation_rate: 0.5
+  num_rounds: 40
+  selection: random
+  dropout_rate: 0.0
+  server_lr: 1.0
+  eval_every: 1
+training:
+  local_epochs: 2
+  batch_size: 64
+  learning_rate: 0.1        # selected on validation accuracy in PILOT-LR (see docs/experiments)
+  momentum: 0.0
+evaluation:
+  per_client: true
+  per_client_every: 10
+  target_accuracy: 0.80
+privacy:
+  enabled: false
+communication:
+  compressor: none
+network:
+  enabled: false
+execution:
+  backend: local

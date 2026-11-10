@@ -1,0 +1,7 @@
+# Wiring check (seconds): tiny synthetic FedAvg run. Used by `make smoke` and the CI system test.
+experiment: {name: smoke_fedavg, seed: 1}
+dataset: {mode: pooled, partition: dirichlet, alpha: 0.5, total_samples: 4000, num_clients: 10}
+model: {name: mlp, hidden: [32]}
+federated: {algorithm: fedprox, mu: 0.1, participation_rate: 0.5, num_rounds: 3}
+training: {local_epochs: 1, batch_size: 32, learning_rate: 0.1}
+evaluation: {per_client_every: 1, target_accuracy: 0.7}

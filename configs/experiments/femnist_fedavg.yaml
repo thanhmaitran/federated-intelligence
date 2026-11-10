@@ -1,0 +1,16 @@
+# Real FEMNIST (run `python scripts/download_datasets.py --dataset femnist` first).
+# Two protocols are reported separately: client_* = held-out samples of participating writers,
+# test_* = writers that never took part in training (unseen-writer generalisation).
+experiment: {name: femnist_fedavg, seed: 1}
+dataset:
+  name: femnist
+  path: data/raw/femnist
+  loader:
+    holdout_writer_fraction: 0.10
+    min_samples_per_client: 30
+    max_clients: 200
+    max_samples_per_client: 300
+model: {name: cnn}
+federated: {algorithm: fedavg, participation_rate: 0.05, num_rounds: 100, eval_every: 5}
+training: {local_epochs: 1, batch_size: 20, learning_rate: 0.05}
+evaluation: {per_client_every: 20, target_accuracy: 0.5}

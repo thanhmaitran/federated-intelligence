@@ -1,0 +1,9 @@
+# Reference federated baseline: FedAvg on the IID partition (the federated counterpart of the
+# centralized baseline in scripts/run_baselines.py). All other suites derive from _defaults.yaml.
+seeds: [1, 2, 3, 4, 5]
+experiments:
+  EXP-00:
+    research_question: reference
+    description: FedAvg on IID data, MLP - compared to the centralized MLP trained on the pooled data.
+    variants:
+      - {name: fedavg_iid, overrides: {}}

@@ -1,0 +1,28 @@
+# Pilot / hyper-parameter selection. Uses seeds that are NOT used in the final experiments and
+# selects on *validation* accuracy only (never on the global test set).
+seeds: [101, 102]
+experiments:
+  PILOT-LR:
+    description: Local learning-rate selection for FedAvg on Dirichlet(0.5) data.
+    grid:
+      lr:
+        - {name: lr0.02, overrides: {training: {learning_rate: 0.02}}}
+        - {name: lr0.05, overrides: {training: {learning_rate: 0.05}}}
+        - {name: lr0.1, overrides: {training: {learning_rate: 0.1}}}
+        - {name: lr0.2, overrides: {training: {learning_rate: 0.2}}}
+    overrides:
+      dataset: {partition: dirichlet, alpha: 0.5}
+  PILOT-MU:
+    seeds: [101, 102, 103, 104]
+    description: FedProx proximal coefficient selection on strongly non-IID data (alpha=0.1).
+    overrides:
+      dataset: {partition: dirichlet, alpha: 0.1}
+    grid:
+      mu:
+        - {name: fedavg, overrides: {federated: {algorithm: fedavg}}}
+        - {name: mu0.001, overrides: {federated: {algorithm: fedprox, mu: 0.001}}}
+        - {name: mu0.01, overrides: {federated: {algorithm: fedprox, mu: 0.01}}}
+        - {name: mu0.1, overrides: {federated: {algorithm: fedprox, mu: 0.1}}}
+        - {name: mu1.0, overrides: {federated: {algorithm: fedprox, mu: 1.0}}}
+        - {name: mu3.0, overrides: {federated: {algorithm: fedprox, mu: 3.0}}}
+        - {name: mu10.0, overrides: {federated: {algorithm: fedprox, mu: 10.0}}}

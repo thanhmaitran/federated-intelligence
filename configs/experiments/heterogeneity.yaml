@@ -1,0 +1,80 @@
+# Heterogeneity, participation and dropout studies (RQ1, RQ2, RQ5).
+# Final experiments use seeds 1..5 (EXP-02 uses 1..8); hyper-parameters were chosen in the
+# pilot (configs/experiments/pilot.yaml) on separate seeds and validation data only.
+seeds: [1, 2, 3, 4, 5]
+experiments:
+  EXP-01:
+    research_question: RQ1
+    description: FedAvg on IID vs Dirichlet(0.5) partitions of the same population.
+    grid:
+      data:
+        - {name: iid, overrides: {dataset: {partition: iid}}}
+        - {name: dirichlet0.5, overrides: {dataset: {partition: dirichlet, alpha: 0.5}}}
+  EXP-01B:
+    research_question: RQ1
+    description: FedAvg per heterogeneity source (native per-client generator scenarios).
+    overrides: {dataset: {mode: native, max_samples_per_client: 1000}}
+    grid:
+      scenario:
+        - {name: iid, overrides: {dataset: {scenario: iid}}}
+        - {name: label_skew, overrides: {dataset: {scenario: label_skew}}}
+        - {name: feature_skew, overrides: {dataset: {scenario: feature_skew}}}
+        - {name: quantity_skew, overrides: {dataset: {scenario: quantity_skew}}}
+        - {name: combined_non_iid, overrides: {dataset: {scenario: combined_non_iid}}}
+  EXP-02:
+    research_question: RQ2
+    seeds: [1, 2, 3, 4, 5, 6, 7, 8]
+    description: Dirichlet alpha sensitivity, FedAvg vs FedProx (mu=1.0 from the pilot).
+    overrides: {dataset: {partition: dirichlet}}
+    grid:
+      alpha:
+        - {name: alpha10, overrides: {dataset: {alpha: 10.0}}}
+        - {name: alpha1, overrides: {dataset: {alpha: 1.0}}}
+        - {name: alpha0.5, overrides: {dataset: {alpha: 0.5}}}
+        - {name: alpha0.1, overrides: {dataset: {alpha: 0.1}}}
+      algo:
+        - {name: fedavg, overrides: {federated: {algorithm: fedavg}}}
+        - {name: fedprox, overrides: {federated: {algorithm: fedprox, mu: 1.0}}}
+  EXP-02B:
+    research_question: RQ2
+    description: FedProx mu sensitivity on non-IID data (alpha 0.1 and 0.5).
+    overrides: {dataset: {partition: dirichlet}}
+    grid:
+      alpha:
+        - {name: alpha0.5, overrides: {dataset: {alpha: 0.5}}}
+        - {name: alpha0.1, overrides: {dataset: {alpha: 0.1}}}
+      mu:
+        - {name: mu0, overrides: {federated: {algorithm: fedavg}}}
+        - {name: mu0.01, overrides: {federated: {algorithm: fedprox, mu: 0.01}}}
+        - {name: mu0.1, overrides: {federated: {algorithm: fedprox, mu: 0.1}}}
+        - {name: mu1, overrides: {federated: {algorithm: fedprox, mu: 1.0}}}
+        - {name: mu3, overrides: {federated: {algorithm: fedprox, mu: 3.0}}}
+        - {name: mu10, overrides: {federated: {algorithm: fedprox, mu: 10.0}}}
+  EXP-03:
+    research_question: RQ5
+    description: Client participation rate, FedAvg vs FedProx, Dirichlet(0.5).
+    overrides: {dataset: {partition: dirichlet, alpha: 0.5}}
+    grid:
+      participation:
+        - {name: p0.1, overrides: {federated: {participation_rate: 0.1}}}
+        - {name: p0.25, overrides: {federated: {participation_rate: 0.25}}}
+        - {name: p0.5, overrides: {federated: {participation_rate: 0.5}}}
+        - {name: p0.75, overrides: {federated: {participation_rate: 0.75}}}
+        - {name: p1.0, overrides: {federated: {participation_rate: 1.0}}}
+      algo:
+        - {name: fedavg, overrides: {federated: {algorithm: fedavg}}}
+        - {name: fedprox, overrides: {federated: {algorithm: fedprox, mu: 1.0}}}
+  EXP-07:
+    research_question: RQ5
+    description: Client dropout (selected clients that never return an update), Dirichlet(0.5).
+    overrides: {dataset: {partition: dirichlet, alpha: 0.5}}
+    grid:
+      dropout:
+        - {name: drop0, overrides: {federated: {dropout_rate: 0.0}}}
+        - {name: drop0.1, overrides: {federated: {dropout_rate: 0.1}}}
+        - {name: drop0.3, overrides: {federated: {dropout_rate: 0.3}}}
+        - {name: drop0.5, overrides: {federated: {dropout_rate: 0.5}}}
+        - {name: drop0.7, overrides: {federated: {dropout_rate: 0.7}}}
+      algo:
+        - {name: fedavg, overrides: {federated: {algorithm: fedavg}}}
+        - {name: fedprox, overrides: {federated: {algorithm: fedprox, mu: 1.0}}}

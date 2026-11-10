@@ -1,0 +1,10 @@
+# FEMNIST-shaped TOY fixture (scripts/make_fixture_datasets.py): wiring check, not a result.
+experiment: {name: smoke_fixture_femnist, seed: 1}
+dataset:
+  name: femnist
+  path: data/fixtures/femnist
+  loader: {holdout_writer_fraction: 0.2, min_samples_per_client: 20}
+model: {name: cnn}
+federated: {algorithm: fedavg, participation_rate: 0.5, num_rounds: 2}
+training: {local_epochs: 1, batch_size: 16, learning_rate: 0.05}
+evaluation: {per_client_every: 1}

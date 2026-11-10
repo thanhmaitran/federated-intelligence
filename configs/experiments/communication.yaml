@@ -1,0 +1,31 @@
+# Communication-efficiency studies (RQ4, RQ5). Bytes are measured on serialized payloads.
+seeds: [1, 2, 3, 4, 5]
+defaults:
+  dataset: {partition: dirichlet, alpha: 0.5}
+experiments:
+  EXP-06:
+    research_question: RQ4
+    description: Uplink compression of client updates (downlink float32 unless stated).
+    variants:
+      - {name: float32, overrides: {communication: {compressor: none}}}
+      - {name: float16, overrides: {communication: {compressor: float16}}}
+      - {name: int8, overrides: {communication: {compressor: int8}}}
+      - {name: topk10, overrides: {communication: {compressor: topk, topk_ratio: 0.1}}}
+      - {name: topk10_ef, overrides: {communication: {compressor: topk, topk_ratio: 0.1, error_feedback: true}}}
+      - {name: topk1, overrides: {communication: {compressor: topk, topk_ratio: 0.01}}}
+      - {name: topk1_ef, overrides: {communication: {compressor: topk, topk_ratio: 0.01, error_feedback: true}}}
+      - {name: int8_down16, overrides: {communication: {compressor: int8, downlink: float16}}}
+  EXP-09:
+    research_question: RQ5
+    description: Simulated slow, heterogeneous network with a round deadline; effect of int8 compression.
+    overrides:
+      network: {enabled: true, latency_ms: 200, bandwidth_mbps: 0.5, heterogeneity: 1.0, failure_prob: 0.05}
+    grid:
+      deadline:
+        - {name: noddl, overrides: {network: {deadline_s: null}}}
+        - {name: ddl2.0, overrides: {network: {deadline_s: 2.0}}}
+        - {name: ddl1.2, overrides: {network: {deadline_s: 1.2}}}
+        - {name: ddl0.8, overrides: {network: {deadline_s: 0.8}}}
+      codec:
+        - {name: float32, overrides: {communication: {compressor: none}}}
+        - {name: int8, overrides: {communication: {compressor: int8}}}
